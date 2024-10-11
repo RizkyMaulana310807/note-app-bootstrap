@@ -6,130 +6,131 @@ ini_set('display_errors', 1);
 include "koneksi.php";
 
 // Function to send JSON response
-function sendJsonResponse($data) {
-    echo json_encode($data);
-    exit;
+function sendJsonResponse($data)
+{
+  echo json_encode($data);
+  exit;
 }
 
 if (isset($_GET['delete_label_id'])) {
-    $deleteLabelId = intval($_GET['delete_label_id']); // Sanitize input
-    $sql = "DELETE FROM Labels WHERE id_label = $deleteLabelId";
+  $deleteLabelId = intval($_GET['delete_label_id']); // Sanitize input
+  $sql = "DELETE FROM Labels WHERE id_label = $deleteLabelId";
 
-    // Prepare the response array
-    $response = [];
+  // Prepare the response array
+  $response = [];
 
-    if ($conn->query($sql) === TRUE) {
-        $response['success'] = 'Label deleted successfully';
-        $response['deleted_id'] = $deleteLabelId;
-    } else {
-        $response['error'] = 'Failed to delete label: ' . $conn->error;
-    }
+  if ($conn->query($sql) === TRUE) {
+    $response['success'] = 'Label deleted successfully';
+    $response['deleted_id'] = $deleteLabelId;
+  } else {
+    $response['error'] = 'Failed to delete label: ' . $conn->error;
+  }
 
-    // Add debug information
-    $response['debug'] = [
-        'attempted_delete_id' => $deleteLabelId,
-        'sql_query' => $sql,
-    ];
+  // Add debug information
+  $response['debug'] = [
+    'attempted_delete_id' => $deleteLabelId,
+    'sql_query' => $sql,
+  ];
 
-    sendJsonResponse($response);
+  sendJsonResponse($response);
 }
 
 if (isset($_GET['sort'])) {
-    $sort = $_GET['sort'];
-    $orderBy = '';
+  $sort = $_GET['sort'];
+  $orderBy = '';
 
-    switch ($sort) {
-        case 'judul':
-            $orderBy = 'ORDER BY judul ASC';
-            break;
-        case 'label':
-            $orderBy = 'ORDER BY nama_label ASC';
-            break;
-        case 'tanggal_ubah':
-            $orderBy = 'ORDER BY tanggal_ubah DESC';
-            break;
-        case 'tanggal':
-        default:
-            $orderBy = 'ORDER BY tanggal_buat DESC';
-            break;
+  switch ($sort) {
+    case 'judul':
+      $orderBy = 'ORDER BY judul ASC';
+      break;
+    case 'label':
+      $orderBy = 'ORDER BY nama_label ASC';
+      break;
+    case 'tanggal_ubah':
+      $orderBy = 'ORDER BY tanggal_ubah DESC';
+      break;
+    case 'tanggal':
+    default:
+      $orderBy = 'ORDER BY tanggal_buat DESC';
+      break;
+  }
+
+  $sql = "SELECT Notes.*, Labels.nama_label, Labels.warna FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label $orderBy";
+  $result = $conn->query($sql);
+
+  $notes = [];
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $notes[] = $row;
     }
+  }
 
-    $sql = "SELECT Notes.*, Labels.nama_label, Labels.warna FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label $orderBy";
-    $result = $conn->query($sql);
-
-    $notes = [];
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $notes[] = $row;
-        }
-    }
-
-    sendJsonResponse(['notes' => $notes]);
+  sendJsonResponse(['notes' => $notes]);
 }
 
 if (isset($_GET['search'])) {
-    $searchTerm = $conn->real_escape_string($_GET['search']);
-    $sql = "SELECT Notes.*, Labels.nama_label, Labels.warna FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label WHERE judul LIKE '%$searchTerm%' OR isi LIKE '%$searchTerm%' ORDER BY tanggal_buat DESC";
-    $result = $conn->query($sql);
+  $searchTerm = $conn->real_escape_string($_GET['search']);
+  $sql = "SELECT Notes.*, Labels.nama_label, Labels.warna FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label WHERE judul LIKE '%$searchTerm%' OR isi LIKE '%$searchTerm%' ORDER BY tanggal_buat DESC";
+  $result = $conn->query($sql);
 
-    $notes = [];
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $notes[] = $row;
-        }
+  $notes = [];
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $notes[] = $row;
     }
+  }
 
-    sendJsonResponse(['notes' => $notes]);
+  sendJsonResponse(['notes' => $notes]);
 }
 
 if (isset($_GET['note_id'])) {
-    $note_id = intval($_GET['note_id']);
-    $sql = "SELECT * FROM Notes WHERE id_catatan = $note_id";
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        $note = $result->fetch_assoc();
-        sendJsonResponse($note);
-    } else {
-        sendJsonResponse(['error' => 'Note not found']);
-    }
+  $note_id = intval($_GET['note_id']);
+  $sql = "SELECT * FROM Notes WHERE id_catatan = $note_id";
+  $result = $conn->query($sql);
+  if ($result->num_rows > 0) {
+    $note = $result->fetch_assoc();
+    sendJsonResponse($note);
+  } else {
+    sendJsonResponse(['error' => 'Note not found']);
+  }
 }
 
 if (isset($_GET['delete_id'])) {
-    $delete_id = intval($_GET['delete_id']);
-    $sql = "DELETE FROM Notes WHERE id_catatan = $delete_id";
-    if ($conn->query($sql) === TRUE) {
-        sendJsonResponse(['success' => 'Note deleted successfully']);
-    } else {
-        sendJsonResponse(['error' => 'Failed to delete note']);
-    }
+  $delete_id = intval($_GET['delete_id']);
+  $sql = "DELETE FROM Notes WHERE id_catatan = $delete_id";
+  if ($conn->query($sql) === TRUE) {
+    sendJsonResponse(['success' => 'Note deleted successfully']);
+  } else {
+    sendJsonResponse(['error' => 'Failed to delete note']);
+  }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['noteId'])) {
-    $noteId = intval($_POST['noteId']);
-    $title = $conn->real_escape_string($_POST['title']);
-    $content = $conn->real_escape_string($_POST['content']);
-    $labelId = intval($_POST['label']);
-    $sql = "UPDATE Notes SET judul = '$title', isi = '$content', id_label = '$labelId', tanggal_ubah = NOW() WHERE id_catatan = $noteId";
-    if ($conn->query($sql) === TRUE) {
-        sendJsonResponse(['success' => 'Note updated successfully']);
-    } else {
-        sendJsonResponse(['error' => 'Failed to update note']);
-    }
+  $noteId = intval($_POST['noteId']);
+  $title = $conn->real_escape_string($_POST['title']);
+  $content = $conn->real_escape_string($_POST['content']);
+  $labelId = intval($_POST['label']);
+  $sql = "UPDATE Notes SET judul = '$title', isi = '$content', id_label = '$labelId', tanggal_ubah = NOW() WHERE id_catatan = $noteId";
+  if ($conn->query($sql) === TRUE) {
+    sendJsonResponse(['success' => 'Note updated successfully']);
+  } else {
+    sendJsonResponse(['error' => 'Failed to update note']);
+  }
 }
 
 function generateNoteCard($row)
 {
-    $bgColor = htmlspecialchars($row['bg_color']) ?: 'gray'; // Default color if no color is set
-    $label = htmlspecialchars($row['nama_label']) ?: 'Tanpa Kategori';
+  $bgColor = htmlspecialchars($row['bg_color']) ?: 'gray'; // Default color if no color is set
+  $label = htmlspecialchars($row['nama_label']) ?: 'Tanpa Kategori';
 
-    $textColor = $row['id_label'] ? 'text-white' : 'text-gray-700';
-    $dateColor = 'text-gray-600';
+  $textColor = $row['id_label'] ? 'text-white' : 'text-gray-700';
+  $dateColor = 'text-gray-600';
 
-    $judul = htmlspecialchars($row['judul']);
-    $isi = htmlspecialchars($row['isi']);
-    $idNote = htmlspecialchars($row['id_catatan']);
+  $judul = htmlspecialchars($row['judul']);
+  $isi = htmlspecialchars($row['isi']);
+  $idNote = htmlspecialchars($row['id_catatan']);
 
-    return "<div style='background-color: $bgColor;' class='rounded-lg shadow-md p-6 relative cursor-pointer' onclick='openEditModal($idNote)'>
+  return "<div style='background-color: $bgColor;' class='rounded-lg shadow-md p-6 relative cursor-pointer' onclick='openEditModal($idNote)'>
                  <span class='absolute top-2 right-2 bg-white text-$bgColor px-3 py-1 text-sm font-semibold rounded'>$label</span>
                  <h2 class='text-xl font-semibold mb-2 $textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$judul</h2>
                  <p class='$textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$isi</p>
@@ -285,141 +286,165 @@ function generateNoteCard($row)
   </div>
 
   <script>
-    function deleteLabel(labelId) {
+  localStorage.clear();
+
+  function deleteLabel(labelId) {
     if (confirm('Apakah Anda yakin ingin menghapus label ini?')) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `?delete_label_id=${labelId}`, true);
-        xhr.onload = function() {
-            const response = JSON.parse(this.responseText);
-            alert(response.success || response.error);
-            
-            // Log debug information to the console
-            console.log('Debug Info:', response.debug);
-
-            if (response.success) {
-                location.reload(); // Reload the page to see the changes
-            }
-        };
-        xhr.send();
-    }
-}
-
-
-
-
-    function openEditModal(noteId) {
-      const xhrNote = new XMLHttpRequest();
-      xhrNote.open("GET", `?note_id=${noteId}`, true);
-      xhrNote.onload = function() {
-        if (this.status === 200) {
-          const note = JSON.parse(this.responseText);
-          if (!note.error) {
-            document.getElementById('noteId').value = note.id_catatan;
-            document.getElementById('noteTitle').value = note.judul;
-            document.getElementById('noteContent').value = note.isi;
-            document.getElementById('noteLabel').value = note.id_label || '';
-            document.getElementById('editModal').classList.remove('hidden');
-          } else {
-            console.error(note.error);
-          }
-        }
-      };
-      xhrNote.send();
-    }
-
-    function closeEditModal() {
-      document.getElementById('editModal').classList.add('hidden');
-    }
-
-    function updateNote() {
-      const noteId = document.getElementById('noteId').value;
-      const title = document.getElementById('noteTitle').value;
-      const content = document.getElementById('noteContent').value;
-      const label = document.getElementById('noteLabel').value;
-
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", "", true);
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.open("GET", `?delete_label_id=${labelId}`, true);
       xhr.onload = function() {
         const response = JSON.parse(this.responseText);
         alert(response.success || response.error);
-        if (response.success) {
-          location.reload();
-        }
-      };
-      xhr.send(`noteId=${noteId}&title=${title}&content=${content}&label=${label}`);
-    }
 
-    function performSearch() {
-      const searchTerm = document.getElementById('searchInput').value;
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", `?search=${searchTerm}`, true);
-      xhr.onload = function() {
-        document.getElementById('notesSection').innerHTML = this.responseText;
+        // Log debug information to the console
+        console.log('Debug Info:', response.debug);
+
+        if (response.success) {
+          location.reload(); // Reload the page to see the changes
+        }
       };
       xhr.send();
     }
+  }
 
-    function handleSearch(event) {
-      if (event.key === 'Enter') {
-        performSearch();
+  function openEditModal(noteId) {
+    const xhrNote = new XMLHttpRequest();
+    xhrNote.open("GET", `?note_id=${noteId}`, true);
+    xhrNote.onload = function() {
+      if (this.status === 200) {
+        const note = JSON.parse(this.responseText);
+        if (!note.error) {
+          document.getElementById('noteId').value = note.id_catatan;
+          document.getElementById('noteTitle').value = note.judul;
+          document.getElementById('noteContent').value = note.isi;
+          document.getElementById('noteLabel').value = note.id_label || '';
+          document.getElementById('editModal').classList.remove('hidden');
+        } else {
+          console.error(note.error);
+        }
       }
+    };
+    xhrNote.send();
+  }
+
+  function closeEditModal() {
+    document.getElementById('editModal').classList.add('hidden');
+  }
+
+  function updateNote() {
+    const noteId = document.getElementById('noteId').value;
+    const title = document.getElementById('noteTitle').value;
+    const content = document.getElementById('noteContent').value;
+    const label = document.getElementById('noteLabel').value;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onload = function() {
+      const response = JSON.parse(this.responseText);
+      alert(response.success || response.error);
+      if (response.success) {
+        location.reload();
+      }
+    };
+    xhr.send(`noteId=${noteId}&title=${title}&content=${content}&label=${label}`);
+  }
+
+  function performSearch() {
+    const searchTerm = document.getElementById('searchInput').value;
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `?search=${searchTerm}`, true);
+    xhr.onload = function() {
+      document.getElementById('notesSection').innerHTML = this.responseText;
+    };
+    xhr.send();
+  }
+
+  function handleSearch(event) {
+    if (event.key === 'Enter') {
+      performSearch();
     }
+  }
 
-    let currentSort = 'tanggal';
+  let currentSort = 'tanggal';
 
-    function toggleSort() {
-      currentSort = currentSort === 'judul' ? 'label' : currentSort === 'label' ? 'tanggal_ubah' : 'judul';
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", `?sort=${currentSort}`, true);
-      xhr.onload = function() {
-        document.getElementById('notesSection').innerHTML = this.responseText;
-        document.getElementById('sortIcon').className = currentSort === 'judul' ? 'fas fa-book' : currentSort === 'label' ? 'fas fa-tags' : 'fas fa-calendar-alt';
-      };
-      xhr.send();
-    }
+  function generateNoteCard(note) {
+    const bgColor = note.bg_color || 'gray'; // Default color if no color is set
+    const label = note.nama_label || 'Tanpa Kategori';
+    const textColor = note.id_label ? 'text-white' : 'text-gray-700';
 
-    function deleteNote() {
-      const noteId = document.getElementById('noteId').value;
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", `?delete_id=${noteId}`, true);
-      xhr.onload = function() {
-        const response = JSON.parse(this.responseText);
-        alert(response.success || response.error);
-        if (response.success) {
-          location.reload();
-        }
-      };
-      xhr.send();
-    }
+    return `
+      <div style="background-color: ${bgColor};" class="rounded-lg shadow-md p-6 relative cursor-pointer" onclick="openEditModal(${note.id_catatan})">
+        <span class="absolute top-2 right-2 bg-white text-${bgColor} px-3 py-1 text-sm font-semibold rounded">${label}</span>
+        <h2 class="text-xl font-semibold mb-2 ${textColor}" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${note.judul}</h2>
+        <p class="${textColor}" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${note.isi}</p>
+        <p class="text-sm ${textColor} bg-${bgColor} inline-flex px-4 py-1 rounded-lg mt-2">Tanggal Buat: ${new Date(note.tanggal_buat).toLocaleDateString()}</p>
+        <p class="text-sm ${textColor} bg-${bgColor} inline-flex px-4 py-1 rounded-lg mt-2">Tanggal Ubah: ${new Date(note.tanggal_ubah).toLocaleDateString()}</p>
+      </div>
+    `;
+  }
 
-    function openLabelModal() {
-      document.getElementById('labelModal').classList.remove('hidden');
-    }
+  function toggleSort() {
+    currentSort = currentSort === 'judul' ? 'label' : currentSort === 'label' ? 'tanggal_ubah' : 'judul';
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `?sort=${currentSort}`, true);
+    xhr.onload = function() {
+      const response = JSON.parse(this.responseText);
+      const notesSection = document.getElementById('notesSection');
+      notesSection.innerHTML = ''; // Clear current notes
 
-    function closeLabelModal() {
-      document.getElementById('labelModal').classList.add('hidden');
-      document.getElementById('labelId').value = '';
-      document.getElementById('labelName').value = '';
-    }
+      // Generate HTML for each note and append to notesSection
+      response.notes .forEach(note => {
+        notesSection.innerHTML += generateNoteCard(note);
+      });
 
-    function saveLabel() {
-      const labelId = document.getElementById('labelId').value;
-      const labelName = document.getElementById('labelName').value;
+      // Update sort icon
+      document.getElementById('sortIcon').className = currentSort === 'judul' ? 'fas fa-book' : currentSort === 'label' ? 'fas fa-tags' : 'fas fa-calendar-alt';
+    };
+    xhr.send();
+  }
 
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", "save_label.php", true);
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      xhr.onload = function() {
-        const response = JSON.parse(this.responseText);
-        alert(response.success || response.error);
-        if (response.success) {
-          location.reload();
-        }
-      };
-      xhr.send(`labelId=${labelId}&labelName=${labelName}`);
-    }
-  </script>
+  function deleteNote() {
+    const noteId = document.getElementById('noteId').value;
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `?delete_id=${noteId}`, true);
+    xhr.onload = function() {
+      const response = JSON.parse(this.responseText);
+      alert(response.success || response.error);
+      if (response.success) {
+        location.reload();
+      }
+    };
+    xhr.send();
+  }
+
+  function openLabelModal() {
+    document.getElementById('labelModal').classList.remove('hidden');
+  }
+
+  function closeLabelModal() {
+    document.getElementById('labelModal').classList.add('hidden');
+    document.getElementById('labelId').value = '';
+    document.getElementById('labelName').value = '';
+  }
+
+  function saveLabel() {
+    const labelId = document.getElementById('labelId').value;
+    const labelName = document.getElementById('labelName').value;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "save_label.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onload = function() {
+      const response = JSON.parse(this.responseText);
+      alert(response.success || response.error);
+      if (response.success) {
+        location.reload();
+      }
+    };
+    xhr.send(`labelId=${labelId}&labelName=${labelName}`);
+  }
+</script>
 </body>
 
 </html>

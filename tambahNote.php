@@ -42,7 +42,7 @@ include "koneksi.php";
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['newCategory']) && isset($_POST['categoryColor'])) {
     $newCategory = $conn->real_escape_string($_POST['newCategory']);
     $categoryColor = $conn->real_escape_string($_POST['categoryColor']);
-    $conn->query("INSERT INTO Labels (nama_label, bg_color) VALUES ('$newCategory', '$categoryColor')");
+    $conn->query("INSERT INTO Labels (nama_label, warna) VALUES ('$newCategory', '$categoryColor')");
     echo "<div class='alert alert-success'>Kategori berhasil ditambahkan!</div>";
     // Redirect untuk mencegah pengiriman ulang data
     header("Location: " . $_SERVER['PHP_SELF']);
