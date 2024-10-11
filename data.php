@@ -351,14 +351,22 @@ function generateNoteCard($row)
   }
 
   function performSearch() {
-    const searchTerm = document.getElementById('searchInput').value;
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", `?search=${searchTerm}`, true);
-    xhr.onload = function() {
-      document.getElementById('notesSection').innerHTML = this.responseText;
-    };
-    xhr.send();
-  }
+  const searchTerm = document.getElementById('searchInput').value;
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", `?search=${searchTerm}`, true);
+  xhr.onload = function() {
+    const response = JSON.parse(this.responseText);
+    const notesSection = document.getElementById('notesSection');
+    notesSection.innerHTML = ''; // Clear current notes
+
+    // Generate HTML for each note and append to notesSection
+    response.notes.forEach(note => {
+      const noteCard = generateNoteCard(note);
+      notesSection.innerHTML += noteCard;
+    });
+  };
+  xhr.send();
+}
 
   function handleSearch(event) {
     if (event.key === 'Enter') {
@@ -385,24 +393,38 @@ function generateNoteCard($row)
   }
 
   function toggleSort() {
-    currentSort = currentSort === 'judul' ? 'label' : currentSort === 'label' ? 'tanggal_ubah' : 'judul';
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", `?sort=${currentSort}`, true);
-    xhr.onload = function() {
-      const response = JSON.parse(this.responseText);
-      const notesSection = document.getElementById('notesSection');
-      notesSection.innerHTML = ''; // Clear current notes
+  currentSort = currentSort === 'judul' ? 'label' : currentSort === 'label' ? 'tanggal_ubah' : 'judul';
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", `?sort=${currentSort}`, true);
+  xhr.onload = function() {
+    const response = JSON.parse(this.responseText);
+    const notesSection = document.getElementById('notesSection');
+    notesSection.innerHTML = ''; // Clear current notes
 
-      // Generate HTML for each note and append to notesSection
-      response.notes .forEach(note => {
-        notesSection.innerHTML += generateNoteCard(note);
-      });
+    // Generate HTML for each note and append to notesSection
+    response.notes.forEach(note => {
+      const bgColor = note.bg_color || 'gray'; // Default color if no color is set
+      const label = note.nama_label || 'Tanpa Kategori';
+      const textColor = note.id_label ? 'text-white' : 'text-gray-700';
 
-      // Update sort icon
-      document.getElementById('sortIcon').className = currentSort === 'judul' ? 'fas fa-book' : currentSort === 'label' ? 'fas fa-tags' : 'fas fa-calendar-alt';
-    };
-    xhr.send();
-  }
+      const noteCard = `
+        <div style="background-color: ${bgColor};" class="rounded-lg shadow-md p-6 relative cursor-pointer" onclick="openEditModal(${note.id_catatan})">
+          <span class="absolute top-2 right-2 bg-white text-${bgColor} px-3 py-1 text-sm font-semibold rounded">${label}</span>
+          <h2 class="text-xl font-semibold mb-2 ${textColor}" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${note.judul}</h2>
+          <p class="${textColor}" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${note.isi}</p>
+          <p class="text-sm ${textColor} bg-${bgColor} inline-flex px-4 py-1 rounded-lg mt-2">Tanggal Buat: ${new Date(note.tanggal_buat).toLocaleDateString()}</p>
+          <p class="text-sm ${textColor} bg-${bgColor} inline-flex px-4 py-1 rounded-lg mt-2">Tanggal Ubah: ${new Date(note.tanggal_ubah).toLocaleDateString()}</p>
+        </div>
+      `;
+
+      notesSection.innerHTML += noteCard;
+    });
+
+    // Update sort icon
+    document.getElementById('sortIcon').className = currentSort === 'judul' ? 'fas fa-book' : currentSort === 'label' ? 'fas fa-tags' : 'fas fa-calendar-alt';
+  };
+  xhr.send();
+}
 
   function deleteNote() {
     const noteId = document.getElementById('noteId').value;
