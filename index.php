@@ -18,7 +18,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="dist/output.css">
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   <style>
     html {
       scroll-behavior: smooth;
@@ -59,7 +60,7 @@
 
   <main class="mt-0">
     <!-- Hero Section -->
-    <section id="hero" class="hero section bg-blue-200 h-screen border-b border-gray-200 flex items-center">
+    <section id="hero" class="hero section bg-blue-300 h-screen border-b border-gray-200 flex items-center">
       <div class="container mx-auto">
         <div class="flex flex-wrap justify-center items-center h-full">
           <div class="w-full lg:w-1/2 p-6 text-lg flex flex-col justify-center" id="welcome-text">

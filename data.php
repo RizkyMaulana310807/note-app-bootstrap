@@ -1,120 +1,141 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+// header('Content-Type: application/json'); // Set the header for JSON response
+
 include "koneksi.php";
-// echo "<script>localStorage.clear();</script>";
-// Handle AJAX request for sorting
+
+// Function to send JSON response
+function sendJsonResponse($data) {
+    echo json_encode($data);
+    exit;
+}
+
+if (isset($_GET['delete_label_id'])) {
+    $deleteLabelId = intval($_GET['delete_label_id']); // Sanitize input
+    $sql = "DELETE FROM Labels WHERE id_label = $deleteLabelId";
+
+    // Prepare the response array
+    $response = [];
+
+    if ($conn->query($sql) === TRUE) {
+        $response['success'] = 'Label deleted successfully';
+        $response['deleted_id'] = $deleteLabelId;
+    } else {
+        $response['error'] = 'Failed to delete label: ' . $conn->error;
+    }
+
+    // Add debug information
+    $response['debug'] = [
+        'attempted_delete_id' => $deleteLabelId,
+        'sql_query' => $sql,
+    ];
+
+    sendJsonResponse($response);
+}
+
 if (isset($_GET['sort'])) {
-  $sort = $_GET['sort'];
-  $orderBy = '';
+    $sort = $_GET['sort'];
+    $orderBy = '';
 
-  switch ($sort) {
-    case 'judul':
-      $orderBy = 'ORDER BY judul ASC';
-      break;
-    case 'label':
-      $orderBy = 'ORDER BY nama_label ASC';
-      break;
-    case 'tanggal_ubah':
-      $orderBy = 'ORDER BY tanggal_ubah DESC';
-      break;
-    case 'tanggal':
-    default:
-      $orderBy = 'ORDER BY tanggal_buat DESC';
-      break;
-  }
-
-  $sql = "SELECT Notes.*, Labels.nama_label, Labels.warna FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label $orderBy";
-  $result = $conn->query($sql);
-
-  if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-      echo generateNoteCard($row);
+    switch ($sort) {
+        case 'judul':
+            $orderBy = 'ORDER BY judul ASC';
+            break;
+        case 'label':
+            $orderBy = 'ORDER BY nama_label ASC';
+            break;
+        case 'tanggal_ubah':
+            $orderBy = 'ORDER BY tanggal_ubah DESC';
+            break;
+        case 'tanggal':
+        default:
+            $orderBy = 'ORDER BY tanggal_buat DESC';
+            break;
     }
-  } else {
-    echo "<div class='text-center'><p>Tidak ada catatan terdeteksi</p></div>";
-  }
-  $conn->close();
-  exit;
+
+    $sql = "SELECT Notes.*, Labels.nama_label, Labels.warna FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label $orderBy";
+    $result = $conn->query($sql);
+
+    $notes = [];
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $notes[] = $row;
+        }
+    }
+
+    sendJsonResponse(['notes' => $notes]);
 }
 
-// Handle AJAX request for searching
 if (isset($_GET['search'])) {
-  $searchTerm = $conn->real_escape_string($_GET['search']);
-  $sql = "SELECT Notes.*, Labels.nama_label, Labels.warna FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label WHERE judul LIKE '%$searchTerm%' OR isi LIKE '%$searchTerm%' ORDER BY tanggal_buat DESC";
-  $result = $conn->query($sql);
+    $searchTerm = $conn->real_escape_string($_GET['search']);
+    $sql = "SELECT Notes.*, Labels.nama_label, Labels.warna FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label WHERE judul LIKE '%$searchTerm%' OR isi LIKE '%$searchTerm%' ORDER BY tanggal_buat DESC";
+    $result = $conn->query($sql);
 
-  if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-      echo generateNoteCard($row);
+    $notes = [];
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $notes[] = $row;
+        }
     }
-  } else {
-    echo "<div class='text-center'><p>Tidak Ditemukan</p></div>";
-  }
-  $conn->close();
-  exit;
+
+    sendJsonResponse(['notes' => $notes]);
 }
 
-// Handle AJAX request for fetching note data
 if (isset($_GET['note_id'])) {
-  $note_id = intval($_GET['note_id']);
-  $sql = "SELECT * FROM Notes WHERE id_catatan = $note_id";
-  $result = $conn->query($sql);
-  if ($result->num_rows > 0) {
-    $note = $result->fetch_assoc();
-    echo json_encode($note);
-  } else {
-    echo json_encode(['error' => 'Note not found']);
-  }
-  $conn->close();
-  exit;
+    $note_id = intval($_GET['note_id']);
+    $sql = "SELECT * FROM Notes WHERE id_catatan = $note_id";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        $note = $result->fetch_assoc();
+        sendJsonResponse($note);
+    } else {
+        sendJsonResponse(['error' => 'Note not found']);
+    }
 }
 
-// Handle AJAX request for deleting a note
 if (isset($_GET['delete_id'])) {
-  $delete_id = intval($_GET['delete_id']);
-  $sql = "DELETE FROM Notes WHERE id_catatan = $delete_id";
-  if ($conn->query($sql) === TRUE) {
-    echo json_encode(['success' => 'Note deleted successfully']);
-  } else {
-    echo json_encode(['error' => 'Failed to delete note']);
-  }
-  $conn->close();
-  exit;
+    $delete_id = intval($_GET['delete_id']);
+    $sql = "DELETE FROM Notes WHERE id_catatan = $delete_id";
+    if ($conn->query($sql) === TRUE) {
+        sendJsonResponse(['success' => 'Note deleted successfully']);
+    } else {
+        sendJsonResponse(['error' => 'Failed to delete note']);
+    }
 }
 
-// Handle AJAX request for updating a note
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['noteId'])) {
-  $noteId = intval($_POST['noteId']);
-  $title = $conn->real_escape_string($_POST['title']);
-  $content = $conn->real_escape_string($_POST['content']);
-  $labelId = intval($_POST['label']);
-  $sql = "UPDATE Notes SET judul = '$title', isi = '$content', id_label = '$labelId', tanggal_ubah = NOW() WHERE id_catatan = $noteId";
-  if ($conn->query($sql) === TRUE) {
-    echo json_encode(['success' => 'Note updated successfully']);
-  } else {
-    echo json_encode(['error' => 'Failed to update note']);
-  }
-  $conn->close();
-  exit;
+    $noteId = intval($_POST['noteId']);
+    $title = $conn->real_escape_string($_POST['title']);
+    $content = $conn->real_escape_string($_POST['content']);
+    $labelId = intval($_POST['label']);
+    $sql = "UPDATE Notes SET judul = '$title', isi = '$content', id_label = '$labelId', tanggal_ubah = NOW() WHERE id_catatan = $noteId";
+    if ($conn->query($sql) === TRUE) {
+        sendJsonResponse(['success' => 'Note updated successfully']);
+    } else {
+        sendJsonResponse(['error' => 'Failed to update note']);
+    }
 }
 
 function generateNoteCard($row)
 {
-  $warna = $row['warna'] ? $row['warna'] : 'gray'; // Default color if no color is set
-  $label = $row['nama_label'] ? $row['nama_label'] : 'Tanpa Kategori ';
-  $textColor = $row['nama_label'] ? 'text-white' : 'text-gray-700';
-  $dateColor = $row['nama_label'] ? 'text-white' : 'text-gray-600';
+    $bgColor = htmlspecialchars($row['bg_color']) ?: 'gray'; // Default color if no color is set
+    $label = htmlspecialchars($row['nama_label']) ?: 'Tanpa Kategori';
 
-  $judul = htmlspecialchars($row['judul']);
-  $isi = htmlspecialchars($row['isi']);
-  $idNote = htmlspecialchars($row['id_catatan']);
+    $textColor = $row['id_label'] ? 'text-white' : 'text-gray-700';
+    $dateColor = 'text-gray-600';
 
-  return "<div class='bg-$warna-500 rounded-lg shadow-md p-6 relative cursor-pointer' onclick='openEditModal($idNote)'>
-               <span class='absolute top-2 right-2 bg-white text-$warna-500 px-3 py-1 text-sm font-semibold rounded'>$label</span>
-               <h2 class='text-xl font-semibold mb-2 $textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$judul</h2>
-               <p class='$textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$isi</p>
-               <p class='text-sm $dateColor bg-$warna-700 inline-flex px-4 py-1 rounded-lg mt-2'>Tanggal Buat: " . date('d-m-Y', strtotime($row['tanggal_buat'])) . "</p>
-               <p class='text-sm $dateColor bg-$warna-700 inline-flex px-4 py-1 rounded-lg mt-2'>Tanggal Ubah: " . date('d-m-Y', strtotime($row['tanggal_ubah'])) . "</p>
-           </div>";
+    $judul = htmlspecialchars($row['judul']);
+    $isi = htmlspecialchars($row['isi']);
+    $idNote = htmlspecialchars($row['id_catatan']);
+
+    return "<div style='background-color: $bgColor;' class='rounded-lg shadow-md p-6 relative cursor-pointer' onclick='openEditModal($idNote)'>
+                 <span class='absolute top-2 right-2 bg-white text-$bgColor px-3 py-1 text-sm font-semibold rounded'>$label</span>
+                 <h2 class='text-xl font-semibold mb-2 $textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$judul</h2>
+                 <p class='$textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$isi</p>
+                 <p class='text-sm $textColor bg-$bgColor inline-flex px-4 py-1 rounded-lg mt-2'>Tanggal Buat: " . date('d-m-Y', strtotime($row['tanggal_buat'])) . "</p>
+                 <p class='text-sm $textColor bg-$bgColor inline-flex px-4 py-1 rounded-lg mt-2'>Tanggal Ubah: " . date('d-m-Y', strtotime($row['tanggal_ubah'])) . "</p>
+             </div>";
 }
 
 ?>
@@ -129,13 +150,11 @@ function generateNoteCard($row)
   <link href="assets/img/favicon.png" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="dist/output.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="font/fontawesome/css/all.min.css">
 </head>
 
 <body class="bg-gray-100 font-roboto">
-
   <header class="fixed top-0 left-0 right-0 bg-white shadow-md z-10">
     <div class="container mx-auto px-4 py-4 flex items-center justify-between">
       <a href="index.php" class="flex items-center">
@@ -165,26 +184,23 @@ function generateNoteCard($row)
 
       <div class="flex flex-row items-start">
         <div class="px-4 py-5 rounded-full group border-2 border-gray-800 hover:bg-blue-500 hover:border-white transition-all cursor-pointer">
-          <a href="#" class="text-gray-800 group-hover:text-white"><i class="fas  fa-2xl fa-gear ml-1"></i></a>
+          <a href="#" class="text-gray-800 group-hover:text-white"><i class="fas fa-2xl fa-gear ml-1"></i></a>
           <ul class="absolute hidden group-hover:block bg-white shadow-md mt-2 py-2 w-48 z-10">
-            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Label</a></li>
-            <!-- <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Dropdown 2</a></li> -->
-            <!-- <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Dropdown 3</a></li> -->
+            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200" onclick="openLabelModal()">Label</a></li>
           </ul>
         </div>
         <div class="p-5 text-gray-800 rounded-full group border-2 border-gray-800 hover:bg-blue-500 hover:border-white transition-all cursor-pointer" id="sortButton" title="sortir" onclick="toggleSort()">
           <i id="sortIcon" class="fas fa-calendar-alt fa-2xl group-hover:text-white"></i>
         </div>
         <div class="p-5 text-gray-800 rounded-full group border-2 border-gray-800 hover:bg-blue-500 hover:border-white transition-all cursor-pointer" title="tambah note" onclick="window.location.href = 'tambahNote.php';">
-          <i class="fas fa-plus fa-2xl group hover:text-white"></i>
+          <i class="fas fa-plus fa-2xl group group-hover:text-white"></i>
         </div>
       </div>
     </div>
 
     <section class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="notesSection">
       <?php
-      // Fetch notes with default sorting by date
-      $sql = "SELECT Notes.*, Labels.nama_label, Labels.warna FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label ORDER BY tanggal_buat DESC";
+      $sql = "SELECT Notes.*, Labels.nama_label, Labels.warna, Notes.bg_color FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label ORDER BY tanggal_buat DESC";
       $result = $conn->query($sql);
 
       if ($result->num_rows > 0) {
@@ -197,6 +213,37 @@ function generateNoteCard($row)
       ?>
     </section>
   </main>
+
+  <!-- Label Management Modal -->
+  <div id="labelModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full">
+      <h2 class="text-xl font-semibold mb-4">Manajemen Label</h2>
+      <input type="hidden" id="labelId">
+      <div class="mb-4">
+        <?php
+        $sql = "SELECT * FROM Labels";
+        $result = $conn->query($sql);
+
+        if ($result->num_rows > 0) {
+          echo "<div class='flex flex-col space-y-2'>";
+          while ($row = $result->fetch_assoc()) {
+            echo "<div class='flex items-center justify-between border-b-2 border-gray-200 pb-2'>";
+            echo "<h1 class='text-lg text-gray-800'>" . htmlspecialchars($row['nama_label']) . "</h1>";
+            echo "<button onclick='deleteLabel(" . $row['id_label'] . ")' class='bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700'>Hapus</button>";
+            echo "</div>";
+          }
+          echo "</div>";
+        } else {
+          echo "<h1 class='text-gray-600'>Belum Ada Label</h1>";
+        }
+        ?>
+      </div>
+      <div class="flex justify-between">
+        <button onclick="saveLabel()" class="bg-blue-600 text-white px-4 py-2 rounded-md">Simpan</button>
+        <button onclick="closeLabelModal()" class="ml-2 bg-gray-300 text-gray-700 px-4 py-2 rounded-md">Batal</button>
+      </div>
+    </div>
+  </div>
 
   <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-white rounded-lg p-6 max-w-md w-full">
@@ -217,11 +264,9 @@ function generateNoteCard($row)
           <?php
           $sql = "SELECT * FROM Labels";
           $result = $conn->query($sql);
-
           if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-              $selected = ($row['id_label'] == $note['id_label']) ? 'selected' : '';
-              echo "<option value='" . $row['id_label'] . "' $selected>" . htmlspecialchars($row['nama_label']) . "</option>";
+              echo "<option value='" . $row['id_label'] . "'>" . htmlspecialchars($row['nama_label']) . "</option>";
             }
           } else {
             echo "<option value=''>Belum Ada Kategori</option>";
@@ -231,15 +276,36 @@ function generateNoteCard($row)
         </select>
       </div>
 
-      <div class="flex justify-end">
+      <div class="flex justify-between">
         <button onclick="updateNote()" class="bg-blue-600 text-white px-4 py-2 rounded-md">Simpan</button>
         <button onclick="closeEditModal()" class="ml-2 bg-gray-300 text-gray-700 px-4 py-2 rounded-md">Batal</button>
+        <button onclick="deleteNote()" class="ml-2 bg-red-600 text-white px-4 py-2 rounded-md">Hapus</button>
       </div>
     </div>
   </div>
 
   <script>
-    localStorage.clear();
+    function deleteLabel(labelId) {
+    if (confirm('Apakah Anda yakin ingin menghapus label ini?')) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", `?delete_label_id=${labelId}`, true);
+        xhr.onload = function() {
+            const response = JSON.parse(this.responseText);
+            alert(response.success || response.error);
+            
+            // Log debug information to the console
+            console.log('Debug Info:', response.debug);
+
+            if (response.success) {
+                location.reload(); // Reload the page to see the changes
+            }
+        };
+        xhr.send();
+    }
+}
+
+
+
 
     function openEditModal(noteId) {
       const xhrNote = new XMLHttpRequest();
@@ -269,7 +335,7 @@ function generateNoteCard($row)
       const noteId = document.getElementById('noteId').value;
       const title = document.getElementById('noteTitle').value;
       const content = document.getElementById('noteContent').value;
-      const label = document.getElementById('noteLabel').value; // Get selected label id
+      const label = document.getElementById('noteLabel').value;
 
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "", true);
@@ -278,7 +344,7 @@ function generateNoteCard($row)
         const response = JSON.parse(this.responseText);
         alert(response.success || response.error);
         if (response.success) {
-          location.reload(); // Reload the page to see the changes
+          location.reload();
         }
       };
       xhr.send(`noteId=${noteId}&title=${title}&content=${content}&label=${label}`);
@@ -311,6 +377,47 @@ function generateNoteCard($row)
         document.getElementById('sortIcon').className = currentSort === 'judul' ? 'fas fa-book' : currentSort === 'label' ? 'fas fa-tags' : 'fas fa-calendar-alt';
       };
       xhr.send();
+    }
+
+    function deleteNote() {
+      const noteId = document.getElementById('noteId').value;
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", `?delete_id=${noteId}`, true);
+      xhr.onload = function() {
+        const response = JSON.parse(this.responseText);
+        alert(response.success || response.error);
+        if (response.success) {
+          location.reload();
+        }
+      };
+      xhr.send();
+    }
+
+    function openLabelModal() {
+      document.getElementById('labelModal').classList.remove('hidden');
+    }
+
+    function closeLabelModal() {
+      document.getElementById('labelModal').classList.add('hidden');
+      document.getElementById('labelId').value = '';
+      document.getElementById('labelName').value = '';
+    }
+
+    function saveLabel() {
+      const labelId = document.getElementById('labelId').value;
+      const labelName = document.getElementById('labelName').value;
+
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "save_label.php", true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onload = function() {
+        const response = JSON.parse(this.responseText);
+        alert(response.success || response.error);
+        if (response.success) {
+          location.reload();
+        }
+      };
+      xhr.send(`labelId=${labelId}&labelName=${labelName}`);
     }
   </script>
 </body>
