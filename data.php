@@ -421,7 +421,7 @@ function generateNoteCard($row)
     });
 
     // Update sort icon
-    document.getElementById('sortIcon').className = currentSort === 'judul' ? 'fas fa-book' : currentSort === 'label' ? 'fas fa-tags' : 'fas fa-calendar-alt';
+    document.getElementById('sortIcon').className = currentSort === 'judul' ? 'fas fa-book fa-2xl group-hover:text-white' : currentSort === 'label' ? 'fas fa-tags fa-2xl group-hover:text-white' : 'fas fa-calendar-alt fa-2xl group-hover:text-white';
   };
   xhr.send();
 }
