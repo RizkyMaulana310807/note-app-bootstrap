@@ -18,7 +18,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="dist/output.css">
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   <style>
     html {
       scroll-behavior: smooth;
@@ -37,18 +38,10 @@
 
       <nav class="hidden md:flex space-x-4">
         <a href="#hero" class="text-gray-800 hover:text-blue-600">Home</a>
-        <a href="#main" class="text-gray-800 hover:text-blue-600">Main Content</a>
+        <a href="#main" class="text-gray-800 hover:text-blue-600">Tentang Scribble</a>
         <a href="#about" class="text-gray-800 hover:text-blue-600">About</a>
         <a href="#team" class="text-gray-800 hover:text-blue-600">Team</a>
-        <a href="data.php" class="text-gray-800 hover:text-blue-600">Data</a>
-        <div class="relative group">
-          <a href="#" class="text-gray-800 hover:text-blue-600">Dropdown <i class="fas fa-chevron-down ml-1"></i></a>
-          <ul class="absolute hidden group-hover:block bg-white shadow-md mt-2 py-2 w-48">
-            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Dropdown 1</a></li>
-            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Dropdown 2</a></li>
-            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Dropdown 3</a></li>
-          </ul>
-        </div>
+        <a href="data.php" class="text-gray-800 hover:text-blue-600">Mulai</a>
       </nav>
 
       <button class="md:hidden text-gray-600">
@@ -59,7 +52,7 @@
 
   <main class="mt-0">
     <!-- Hero Section -->
-    <section id="hero" class="hero section bg-blue-200 h-screen border-b border-gray-200 flex items-center">
+    <section id="hero" class="hero section bg-blue-300 h-screen border-b border-gray-200 flex items-center">
       <div class="container mx-auto">
         <div class="flex flex-wrap justify-center items-center h-full">
           <div class="w-full lg:w-1/2 p-6 text-lg flex flex-col justify-center" id="welcome-text">
@@ -79,7 +72,7 @@
     <section id="main" class="main section bg-white h-screen border-b border-gray-200 flex shadow-lg">
       <div class="container mx-auto">
         <h2 class="text-7xl font-extrabold mb-4 mt-40 text-gray-700" style="font-family: 'Impact', sans-serif;">SCRIBBLE NOTES</h2>
-        <p class="text-lg text-gray-600">Catatan Pintar Anda untuk <span id="typing-text" class="bg-blue-300 px-3 py-1 rounded-lg shadow-xl font-extrabold text-white"></span></p>
+        <p class="text-lg text-gray-600">Catatan Pintar Anda untuk menyimpan <span id="typing-text" class="bg-blue-600 px-3 py-1 rounded-lg shadow-xl font-extrabold text-white"></span></p>
         <div class="border-blue-500 border-2 rounded-full mt-11 inline-flex hover:bg-blue-500 hover:border-white transition-all group">
           <a class="text-xl py-3 px-10 text-center font-extrabold text-blue-500 group-hover:text-white" href="data.php">MULAI</a>
         </div>
@@ -115,7 +108,7 @@
             <div class="bg-white rounded-lg shadow-md p-4"> <!-- Card 1 -->
               <img src="assets/img/team/team-1.jpg" class="w-full rounded-lg mb-2" alt="">
               <h4 class="text-xl font-bold mb-2 text-gray-800">Rizky Maulana</h4>
-              <p class="text-lg text-gray-600">BackEnd Dev</p>
+              <p class="text-lg text-gray-600">BackEnd Dev | Flow Chart</p>
             </div>
           </div>
           <div class="w-full lg:w-1/4 p-6">
@@ -129,14 +122,14 @@
             <div class="bg-white rounded-lg shadow-md p-4"> <!-- Card 3 -->
               <img src="assets/img/team/team-3.jpg" class="w-full rounded-lg mb-2" alt="">
               <h4 class="text-xl font-bold mb-2 text-gray-800">Dika</h4>
-              <p class="text-lg text-gray-600">UI/UX</p>
+              <p class="text-lg text-gray-600">UI/UX | QA (Test Case)</p>
             </div>
           </div>
           <div class="w-full lg:w-1/4 p-6">
             <div class="bg-white rounded-lg shadow-md p-4"> <!-- Card 4 -->
               <img src="assets/img/team/team-4.jpg" class="w-full rounded-lg mb-2" alt="">
               <h4 class="text-xl font-bold mb-2 text-gray-800">Dearly</h4>
-              <p class="text-lg text-gray-600">Test Case</p>
+              <p class="text-lg text-gray-600">none</p>
             </div>
           </div>
         </div>
@@ -178,12 +171,12 @@
   <script src="assets/js/jquery-3.7.1.min.js"></script>
 
   <script>
-    const texts = ["Ide", "Proyek", "Impian", "Note"];
+    const texts = ["Ide", "Tugas Sekolah", "Proyek", "Daftar Belanja", "Kata Kata Penting", "Nomor Telepon", "Impian", "Jadwal", "Lirik Lagu", "Daftar bacaan", "Akun dan Password", "Scribble Notes"];
     let currentTextIndex = 0;
     let currentCharIndex = 0;
     let isDeleting = false;
-    const typingSpeed = 200; // Speed of typing
-    const deletingSpeed = 100; // Speed of deleting
+    const typingSpeed = 150; // Speed of typing
+    const deletingSpeed = 50; // Speed of deleting
     const delayBetweenTexts = 2000; // Delay between each text
 
     function type() {

@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Catatan</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dist/output.css">
+
     <style>
         .input-field {
             transition: border-color 0.3s;
@@ -57,7 +59,7 @@ if (isset($_GET['title']) && isset($_GET['content'])) {
     // Siapkan query berdasarkan keberadaan kategori dan warna
     $query = "INSERT INTO Notes (judul, isi, tanggal_buat, tanggal_ubah" .
              ($category ? ", id_label" : "") .
-             ($color ? ", warna" : "") .
+             ($color ? ", bg_color" : "") .
              ") VALUES ('$title', '$content', NOW(), NOW()" .
              ($category ? ", (SELECT id_label FROM Labels WHERE nama_label='$category')" : "") .
              ($color ? ", '$color'" : "") .
@@ -82,7 +84,7 @@ if (isset($_GET['title']) && isset($_GET['content'])) {
 
             <div class="form-group">
                 <label for="content">Teks</label>
-                <input type="text" id="content" name="content" class="form-control input-field" placeholder="Tulis catatan Anda di sini..." required oninput="saveInputValues()"></input>
+                <textarea  id="content" name="content" class="form-control input-field" placeholder="Tulis catatan Anda di sini..." required oninput="saveInputValues()"></textarea>
                 <small class="form-text text-muted">Area utama untuk menuliskan isi catatanmu.</small>
             </div>
 
@@ -123,7 +125,7 @@ if (isset($_GET['title']) && isset($_GET['content'])) {
             </div>
 
             <div class="d-flex justify-content-end">
-                <a href="index.php" class="btn btn-secondary mr-2">Batal</a>
+                <a href="data.php" class="btn btn-secondary mr-2">Batal</a>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </form>
