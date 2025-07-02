@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+<t>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Index - Impact Bootstrap Template</title>
+  <title>Index - Impact Tailwind Template</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -15,295 +15,153 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</t>
 
-  <!-- Main CSS File -->
-  <link href="assets/css/main.css" rel="stylesheet">
+<body class="bg-gray-100 font-roboto">
 
-  <!-- =======================================================
-  * Template Name: Impact
-  * Template URL: https://bootstrapmade.com/impact-bootstrap-business-website-template/
-  * Updated: Aug 07 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
-</head>
+  <header class="fixed top-0 left-0 right-0 bg-white shadow-md z-10">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="index.php" class="flex items-center">
+        <h1 class="text-2xl font-bold text-blue-600">Scribble Notes</h1>
+        <span class="text-2xl font-bold text-blue-600">.</span>
+      </a>
 
-<body class="index-page">
-
-  <header id="header" class="header fixed-top">
-
-   
-      
-      </div>
-    </div><!-- End Top Bar -->
-
-    <div class="branding d-flex align-items-cente">
-
-      <div class="container position-relative d-flex align-items-center justify-content-between">
-        <a href="index.php" class="logo d-flex align-items-center">
-          <!-- Uncomment the line below if you also wish to use an image logo -->
-          <!-- <img src="assets/img/logo.png" alt=""> -->
-          <h1 class="sitename">Kelompok 2</h1>
-          <span>.</span>
-        </a>
-
-        <nav id="navmenu" class="navmenu">
-          <ul>
-            <li><a href="#hero" class="active">Home<br></a></li>
-            <li><a href="#main">Main Content</a></li>
-            <li><a href="#about">About</a></li>
-            <!-- <li><a href="#services">Services</a></li> -->
-            <!-- <li><a href="#portfolio">Portfolio</a></li> -->
-            <li><a href="#team">Team</a></li>
-            <!-- <li><a href="blog.php">Blog</a></li> -->
-            <li><a href="data.php">Data</a></li>
-            
-            <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-              <ul>
-                <li><a href="#">Dropdown 1</a></li>
-                <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                  <ul>
-                    <li><a href="#">Deep Dropdown 1</a></li>
-                    <li><a href="#">Deep Dropdown 2</a></li>
-                    <li><a href="#">Deep Dropdown 3</a></li>
-                    <li><a href="#">Deep Dropdown 4</a></li>
-                    <li><a href="#">Deep Dropdown 5</a></li>
-                  </ul>
-                </li>
-                <li><a href="#">Dropdown 2</a></li>
-                <li><a href="#">Dropdown 3</a></li>
-                <li><a href="#">Dropdown 4</a></li>
-              </ul>
-            </li>
-            <!-- <li><a href="#contact">Contact</a></li> -->
+      <nav class="hidden md:flex space-x-4">
+        <a href="#hero" class="text-gray-800 hover:text-blue-600">Home</a>
+        <a href="#main" class="text-gray-800 hover:text-blue-600">Main Content</a>
+        <a href="#about" class="text-gray-800 hover:text-blue-600">About</a>
+        <a href="#team" class="text-gray-800 hover:text-blue-600">Team</a>
+        <a href="data.php" class="text-gray-800 hover:text-blue-600">Data</a>
+        <div class="relative group">
+          <a href="#" class="text-gray-800 hover:text-blue-600">Dropdown <i class="fas fa-chevron-down ml-1"></i></a>
+          <ul class="absolute hidden group-hover:block bg-white shadow-md mt-2 py-2 w-48">
+            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Dropdown 1</a></li>
+            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Dropdown 2</a></li>
+            <li><a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Dropdown 3</a></li>
           </ul>
-          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-        </nav>
+        </div>
+      </nav>
 
-      </div>
-
+      <button class="md:hidden text-gray-600">
+        <i class="fas fa-ellipsis-v text-2xl"></i>
+      </button>
     </div>
-
   </header>
 
-  <main class="main">
-
+  <main class="mt-0">
     <!-- Hero Section -->
-    <section id="hero" class="hero section accent-background">
+    <section id="hero" class="hero section bg-blue-200 h-screen border-b border-gray-200 flex items-center">
+      <div class="container mx-auto">
+        <div class="flex flex-wrap justify-center items-center h-full">
+          <div class="w-full lg:w-1/2 p-6 text-lg flex flex-col justify-center" id="welcome-text">
+            <h2 class="text-7xl font-bold mb-4 text-white text-center drop-shadow-lg" style="font-family: 'Impact', sans-serif;">WELCOME TO SCRIBBLE NOTES</h2>
+          </div>
 
-      <div class="container position-relative" data-aos="fade-up" data-aos-delay="100">
-        <div class="row gy-5 justify-content-between">
-          <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
-            <h2 align="center"><span>Welcome to </span><span class="accent">Website Notes</span></h2>
-            <!-- <p>Sed autem laudantium dolores. Voluptatem itaque ea consequatur eveniet. Eum quas beatae cumque eum quaerat.</p> -->
-          
-          </div>
-          <div class="col-lg-5 order-1 order-lg-2">
-            <img src="assets/img/hero-img.svg" class="img-fluid" alt="">
-          </div>
+
+          <!-- <div class="w-full lg:w-1/2 p-6 flex justify-center">
+                <img src="assets/img/hero-img.svg" class="w-full" alt="">
+            </div> -->
         </div>
       </div>
+    </section>
 
-      <div class="icon-boxes position-relative" data-aos="fade-up" data-aos-delay="200">
-        <div class="container position-relative">
-          <div class="row gy-4 mt-5">
 
-        
-          
-
-          </div>
+    <!-- Main Section -->
+    <section id="main" class="main section bg-white h-screen border-b border-gray-200 flex shadow-lg">
+      <div class="container mx-auto">
+        <h2 class="text-7xl font-extrabold mb-4 mt-40 text-gray-700" style="font-family: 'Impact', sans-serif;">SCRIBBLE NOTES</h2>
+        <p class="text-lg text-gray-600">Catatan Pintar Anda untuk <span id="typing-text" class="bg-blue-300 px-3 py-1 rounded-lg shadow-xl font-extrabold text-white"></span></p>
+        <div class="border-blue-500 border-2 rounded-full mt-11 inline-flex hover:bg-blue-500 hover:border-white transition-all group">
+          <a class="text-xl py-3 px-10 text-center font-extrabold text-blue-500 group-hover:text-white" href="data.php">MULAI</a>
         </div>
       </div>
+    </section>
 
-    </section><!-- /Hero Section -->
-
-    <section id="main" class="main section">
-
-    <div class="container section-title" data-aos="fade-up">
-        <h2>Beranda<br></h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-      </div><!-- End Section Title -->
-
-    </section><!-- /main Section -->
-
-    <hr>
     <!-- About Section -->
-    <section id="about" class="about section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>About Us<br></h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-      </div><!-- End Section Title -->
-
-      <div class="container">
-
+    <div id="about" class="about section bg-blue-600 h-screen border-b border-gray-200 flex flex-col items-center justify-between shadow-lg">
+      <div class="container mx-auto mt-16"> <!-- Added margin-top to move text down -->
+        <h2 class="text-5xl font-bold mb-4 text-white">About Us</h2>
+        <p class="text-lg text-white">Website ini dibuat oleh kelompok 2 yang di anggotai, Dika, Rizky, Rafi B, Dan Dearly. Dengan tujuan untuk membantu pengguna agar lebih produktif dengan aplikasi catatan yang sederhana dan efektif</p>
+        <div class="border-white-500 border-2 rounded-full mt-11 inline-flex hover:bg-white hover:border-white transition-all group">
+        <a class="text-xl py-3 px-10 text-center font-extrabold text-white group-hover:text-blue-500" href="#team">Our Team</a>
       </div>
-
-    </section><!-- /About Section -->
-
-    <!-- Clients Section -->
-    <section id="clients" class="clients section">
-
-    </section><!-- /Clients Section -->
-
-    <!-- Stats Section -->
-    <section id="stats" class="stats section">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row gy-4 align-items-center">
-
-        
-
-          <div class="col-lg-7">
-
-            <div class="row gy-4">
-
-              <div class="col-lg-6">
-                <div class="stats-item d-flex">
-               
-                 
-                </div>
-              </div><!-- End Stats Item -->
-
-              <div class="col-lg-6">
-                <div class="stats-item d-flex">
-               
-                 
-                </div>
-              </div><!-- End Stats Item -->
-
-              <div class="col-lg-6">
-                <div class="stats-item d-flex">
-             
-                 
-                </div>
-              </div><!-- End Stats Item -->
-
-              <div class="col-lg-6">
-                <div class="stats-item d-flex">
-               
-                 
-                </div>
-              </div><!-- End Stats Item -->
-
-            </div>
-
-          </div>
-
+      </div>
+      
+      <div class="p-2 rounded-2xl"> <!-- Reduced padding -->
+        <h1 class="text-white mb-2">Website ini di buat dengan:</h1> <!-- Reduced margin -->
+        <div class="flex justify-center space-x-2"> <!-- Reduced space between images -->
+          <img src="assets/logo/tailwind.png" alt="tailwind" class="w-24 h-24 rounded-lg shadow-md" title="TailwindCSS">
+          <img src="assets/logo/php.png" alt="PHP" class="w-24 h-24 rounded-lg shadow-md" title="PHP">
+          <img src="assets/logo/chatgpt.png" alt="chatGPT" class="w-24 h-24 rounded-lg shadow-md" title="ChatGPT">
         </div>
-
-      </div>
-
-    </section><!-- /Stats Section -->
-
-  
-    <!-- Services Section -->
-  
-
-  
-
-        </div>
-
-      </div>
-
-    </section><!-- /Portfolio Section -->
-
-    <!-- Team Section -->
-    <section id="team" class="team section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Our Team</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-      </div><!-- End Section Title -->
-
-      <div class="container">
-
-        <div class="row gy-4">
-
-          <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="100">
-            <div class="member">
-              <img src="assets/img/team/team-1.jpg" class="img-fluid" alt="">
-              <h4>Walter White</h4>
-              <span>Web Development</span>
-              <div class="social">
-               
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="200">
-            <div class="member">
-              <img src="assets/img/team/team-2.jpg" class="img-fluid" alt="">
-              <h4>Sarah Jhinson</h4>
-              <span>Marketing</span>
-              <div class="social">
-              
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
-            <div class="member">
-              <img src="assets/img/team/team-3.jpg" class="img-fluid" alt="">
-              <h4>William Anderson</h4>
-              <span>Content</span>
-              <div class="social">
-              
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="400">
-            <div class="member">
-              <img src="assets/img/team/team-4.jpg" class="img-fluid" alt="">
-              <h4>Amanda Jepson</h4>
-              <span>Accountant</span>
-              <div class="social">
-              
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Team Section -->
-
-    
-
-  <footer id="footer" class="footer accent-background">
-
-  
-    <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Impact</strong> <span>All Rights Reserved</span></p>
-      <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you've purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
       </div>
     </div>
 
+    <!-- Team Section -->
+    <section id="team" class="team section bg-white h-screen border-b border-gray-200 flex items-center shadow-lg">
+      <div class="container mx-auto">
+        <h2 class="text-3xl font-bold mb-4 text-gray-800">Our Team</h2>
+        <div class="flex flex-wrap justify-center">
+          <div class="w-full lg:w-1/4 p-6">
+            <div class="bg-white rounded-lg shadow-md p-4"> <!-- Card 1 -->
+              <img src="assets/img/team/team-1.jpg" class="w-full rounded-lg mb-2" alt="">
+              <h4 class="text-xl font-bold mb-2 text-gray-800">Rizky Maulana</h4>
+              <p class="text-lg text-gray-600">BackEnd Dev</p>
+            </div>
+          </div>
+          <div class="w-full lg:w-1/4 p-6">
+            <div class="bg-white rounded-lg shadow-md p-4"> <!-- Card 2 -->
+              <img src="assets/img/team/team-2.jpg" class="w-full rounded-lg mb-2" alt="">
+              <h4 class="text-xl font-bold mb-2 text-gray-800">Rafi B</h4>
+              <p class="text-lg text-gray-600">FrontEnd Dev</p>
+            </div>
+          </div>
+          <div class="w-full lg:w-1/4 p-6">
+            <div class="bg-white rounded-lg shadow-md p-4"> <!-- Card 3 -->
+              <img src="assets/img/team/team-3.jpg" class="w-full rounded-lg mb-2" alt="">
+              <h4 class="text-xl font-bold mb-2 text-gray-800">Dika</h4>
+              <p class="text-lg text-gray-600">UI/UX</p>
+            </div>
+          </div>
+          <div class="w-full lg:w-1/4 p-6">
+            <div class="bg-white rounded-lg shadow-md p-4"> <!-- Card 4 -->
+              <img src="assets/img/team/team-4.jpg" class="w-full rounded-lg mb-2" alt="">
+              <h4 class="text-xl font-bold mb-2 text-gray-800">Dearly</h4>
+              <p class="text-lg text-gray-600">Test Case</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+
+
+
+
+
+  <footer class="footer bg-blue-600 text-white py-12">
+    <div class="container mx-auto px-4">
+      <p class="text-lg">2024 Kelompok 2. All Rights Reserved.</p>
+      <div class="credits">
+        <!-- Designed by <a href="https://bootstrapmade.com/" class="text-blue-200 hover:underline">BootstrapMade</a> -->
+        @ SMKN 4 PADALARANG
+      </div>
+    </div>
   </footer>
 
   <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Preloader -->
-  <div id="preloader"></div>
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="fas fa-arrow-up"></i></a>
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -317,7 +175,58 @@
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/jquery-3.7.1.min.js"></script>
 
+  <script>
+    const texts = ["Ide", "Proyek", "Impian", "Note"];
+    let currentTextIndex = 0;
+    let currentCharIndex = 0;
+    let isDeleting = false;
+    const typingSpeed = 200; // Speed of typing
+    const deletingSpeed = 100; // Speed of deleting
+    const delayBetweenTexts = 2000; // Delay between each text
+
+    function type() {
+      const typingTextElement = document.getElementById("typing-text");
+      const currentText = texts[currentTextIndex];
+
+      if (isDeleting) {
+        typingTextElement.textContent = currentText.substring(0, currentCharIndex - 1);
+        currentCharIndex--;
+
+        if (currentCharIndex === 0) {
+          isDeleting = false;
+          currentTextIndex = (currentTextIndex + 1) % texts.length;
+          setTimeout(type, typingSpeed);
+        } else {
+          setTimeout(type, deletingSpeed);
+        }
+      } else {
+        typingTextElement.textContent = currentText.substring(0, currentCharIndex + 1);
+        currentCharIndex++;
+
+        if (currentCharIndex === currentText.length) {
+          isDeleting = true;
+          setTimeout(type, delayBetweenTexts);
+        } else {
+          setTimeout(type, typingSpeed);
+        }
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      type();
+    });
+    $(document).ready(function() {
+      $('#toggle-button').click(function() {
+        if ($('#welcome-text').is(':visible')) {
+          $('#welcome-text').slideUp(300).fadeOut(300);
+        } else {
+          $('#welcome-text').fadeIn(300).slideDown(300);
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>

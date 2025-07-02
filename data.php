@@ -1,179 +1,245 @@
+<?php
+include "koneksi.php";
+
+// Handle AJAX request for sorting
+if (isset($_GET['sort'])) {
+    $sort = $_GET['sort'];
+    $orderBy = '';
+
+    switch ($sort) {
+        case 'judul':
+            $orderBy = 'ORDER BY judul ASC';
+            break;
+        case 'label':
+            $orderBy = 'ORDER BY nama_label ASC';
+            break;
+        case 'tanggal_ubah':
+            $orderBy = 'ORDER BY tanggal_ubah DESC';
+            break;
+        case 'tanggal':
+        default:
+            $orderBy = 'ORDER BY tanggal_buat DESC';
+            break;
+    }
+
+    $sql = "SELECT Notes.*, Labels.nama_label FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label $orderBy";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $warna = $row['warna'];
+            $label = $row['nama_label'] ? $row['nama_label'] : 'Tanpa Kategori';
+            $textColor = $row['nama_label'] ? 'text-white' : 'text-gray-700';
+            $dateColor = $row['nama_label'] ? 'text-white' : 'text-gray-600';
+
+            $judul = htmlspecialchars($row['judul']);
+            $isi = htmlspecialchars($row['isi']);
+
+            echo "<div class='bg-$warna-500 rounded-lg shadow-md p-6 relative'>";
+            echo "<span class='absolute top-2 right-2 bg-white text-$warna-500 px-3 py-1 text-sm font-semibold rounded'>$label</span>";
+            echo "<h2 class='text-xl font-semibold mb-2 $textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$judul</h2>";
+            echo "<p class='$textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$isi</p>";
+            echo "<p class='text-sm $dateColor bg-$warna-700 inline-flex px-4 py-1 rounded-lg mt-2'>Tanggal Buat: " . date('d-m-Y', strtotime($row['tanggal_buat'])) . "</p>";
+            echo "<p class='text-sm $dateColor bg-$warna-700 inline-flex px-4 py-1 rounded-lg mt-2'>Tanggal Ubah: " . date('d-m-Y', strtotime($row['tanggal_ubah'])) . "</p>";
+            echo "</div>";
+        }
+    } else {
+        echo "<div class='text-center'><p>Tidak ada catatan terdeteksi</p></div>";
+    }
+    $conn->close();
+    exit; // Terminate the script after handling the AJAX request
+}
+
+// Handle AJAX request for searching
+if (isset($_GET['search'])) {
+    $searchTerm = $conn->real_escape_string($_GET['search']);
+    $sql = "SELECT Notes.*, Labels.nama_label FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label WHERE judul LIKE '%$searchTerm%' OR isi LIKE '%$searchTerm%' ORDER BY tanggal_buat DESC";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $warna = $row['warna'];
+            $label = $row['nama_label'] ? $row['nama_label'] : 'Tanpa Kategori';
+            $textColor = $row['nama_label'] ? 'text-white' : 'text-gray-700';
+            $dateColor = $row['nama_label'] ? 'text-white' : 'text-gray-600';
+
+            $judul = htmlspecialchars($row['judul']);
+            $isi = htmlspecialchars($row['isi']);
+
+            echo "<div class='bg-$warna-500 rounded-lg shadow-md p-6 relative'>";
+            echo "<span class='absolute top-2 right-2 bg-white text-$warna-500 px-3 py-1 text-sm font-semibold rounded'>$label</span>";
+            echo "<h2 class='text-xl font-semibold mb-2 $textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$judul</h2>";
+            echo "<p class='$textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$isi</p>";
+            echo "<p class='text-sm $dateColor bg-$warna-700 inline-flex px-4 py-1 rounded-lg mt-2'>Tanggal Buat: " . date('d-m-Y', strtotime($row['tanggal_buat'])) . "</p>";
+            echo "<p class='text-sm $dateColor bg-$warna-700 inline-flex px-4 py-1 rounded-lg mt-2'>Tanggal Ubah: " . date('d-m-Y', strtotime($row['tanggal_ubah'])) . "</p>";
+            echo "</div>";
+        }
+    } else {
+        echo "<div class='text-center'><p>Tidak Ditemukan</p></div>";
+    }
+    $conn->close();
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Blog - Impact Bootstrap Template</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
-
-  <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-
-  <!-- Main CSS File -->
-  <link href="assets/css/main.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: Impact
-  * Template URL: https://bootstrapmade.com/impact-bootstrap-business-website-template/
-  * Updated: Aug 07 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Scribble Notes</title>
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dist/output.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="font/fontawesome/css/all.min.css">
 </head>
 
-<body class="blog-page">
+<body class="bg-gray-100 font-roboto">
 
-  <header id="header" class="header fixed-top">
+    <header class="fixed top-0 left-0 right-0 bg-white shadow-md z-10">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="index.php" class="flex items-center">
+                <h1 class="text-2xl font-bold text-blue-600">Scribble Notes</h1>
+                <span class="text-2xl font-bold text-blue-600">.</span>
+            </a>
+            <nav class="hidden md:flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" id="searchInput" placeholder="Search..." class="pl-3 pr-10 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" onkeypress="handleSearch(event)">
+                    <button class="absolute right-3 top-1/2 transform -translate-y-1/2" onclick="performSearch()">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </button>
+                </div>
+            </nav>
+            <button class="md:hidden text-gray-600">
+                <i class="bi bi-list text-2xl"></i>
+            </button>
+        </div>
+    </header>
 
-   
-
-    <div class="branding d-flex align-items-cente">
-
-      <div class="container position-relative d-flex align-items-center justify-content-between">
-        <a href="index.php" class="logo d-flex align-items-center">
-          <!-- Uncomment the line below if you also wish to use an image logo -->
-          <!-- <img src="assets/img/logo.png" alt=""> -->
-          <h1 class="sitename">Kelompok 2</h1>
-          <span>.</span>
-        </a>
-
-        <nav id="navmenu" class="navmenu">
-          <ul>
-            <li><a href="#hero">Home<br></a></li>
-            <li><a href="#about">About</a></li>
-            <!-- <li><a href="#services">Services</a></li> -->
-            <!-- <.li><a href="#portfolio">Portfolio</a></li> -->
-            <li><a href="#team">Team</a></li>
-            <li><a href="data.php" class="active">Data</a></li>
-            <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-              <ul>
-                <li><a href="#">Dropdown 1</a></li>
-                <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                  <ul>
-                    <li><a href="#">Deep Dropdown 1</a></li>
-                    <li><a href="#">Deep Dropdown 2</a></li>
-                    <li><a href="#">Deep Dropdown 3</a></li>
-                    <li><a href="#">Deep Dropdown 4</a></li>
-                    <li><a href="#">Deep Dropdown 5</a></li>
-                  </ul>
-                </li>
-                <li><a href="#">Dropdown 2</a></li>
-                <li><a href="#">Dropdown 3</a></li>
-                <li><a href="#">Dropdown 4</a></li>
-              </ul>
-            </li>
-            <!-- <li><a href="#contact">Contact</a></li> -->
-          </ul>
-          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-        </nav>
-
-      </div>
-
-    </div>
-
-  </header>
-
-  <main class="main">
-
-    <!-- Page Title -->
-    <div class="page-title">
-      <div class="heading">
-        <div class="container">
-          <div class="row d-flex justify-content-center text-center">
-            <div class="col-lg-8">
-              <h1>Data Notes</h1>
-              <p class="mb-0">Odio et unde deleniti. Deserunt numquam exercitationem. Officiis quo odio sint voluptas consequatur ut a odio voluptatem. Sit dolorum debitis veritatis natus dolores. Quasi ratione sint. Sit quaerat ipsum dolorem.</p>
+    <main class="mt-24 container mx-auto px-4">
+        <div class="flex justify-between">
+            <div>
+                <h1 class="text-4xl font-bold mb-4 text-gray-800">Scribble Notes</h1>
+                <p class="text-lg text-gray-600">Catatan anda baru-baru ini</p>
             </div>
-          </div>
+
+            <div class="flex flex-row items-start">
+                <div class="p-5 text-gray-800 rounded-full group border-2 border-gray-800 hover:bg-blue-500 hover:border-white transition-all cursor-pointer" id="sortButton" title="sortir" onclick="toggleSort()">
+                    <i id="sortIcon" class="fas fa-calendar-alt fa-2xl group-hover:text-white"></i>
+                </div>
+                <div class="p-5 text-gray-800 rounded-full group border-2 border-gray-800 hover:bg-blue-500 hover:border-white transition-all cursor-pointer" title="tambah note" onclick="window.location.href = 'tambahNote.php';">
+                    <i class="fas fa-plus fa-2xl group-hover:text-white"></i>
+                </div>
+            </div>
         </div>
-      </div>
-      <nav class="breadcrumbs">
-        <div class="container">
-          <ol>
-            <li><a href="index.php">Home</a></li>
-            <li class="current">Data</li>
-          </ol>
+
+        <section class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="notesSection">
+            <?php
+            // Fetch notes with default sorting by date
+            $sql = "SELECT Notes.*, Labels.nama_label FROM Notes LEFT JOIN Labels ON Notes.id_label = Labels.id_label ORDER BY tanggal_buat DESC";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $warna = $row['warna'];
+                    $label = $row['nama_label'] ? $row['nama_label'] : 'Tanpa Kategori';
+                    $textColor = $row['nama_label'] ? 'text-white' : 'text-gray-700';
+                    $dateColor = $row['nama_label'] ? 'text-white' : 'text-gray-600';
+
+                    $judul = htmlspecialchars($row['judul']);
+                    $isi = htmlspecialchars($row['isi']);
+
+                    echo "<div class='bg-$warna-500 rounded-lg shadow-md p-6 relative overflow-hidden'>";
+                    echo "<span class='absolute top-2 right-2 bg-white text-$warna-500 px-3 py-1 text-sm font-semibold rounded'>$label</span>";
+                    echo "<h2 class='text-xl font-semibold mb-2 $textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$judul</h2>";
+                    echo "<p class='$textColor' style='overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'>$isi</p>";
+                    echo "<p class='text-sm $dateColor bg-$warna-700 inline-flex px-4 py-1 rounded-lg mt-2'>Tanggal Buat: " . date('d-m-Y', strtotime($row['tanggal_buat'])) . "</p>";
+                    echo "<p class='text-sm $dateColor bg-$warna-700 inline-flex px-4 py-1 rounded-lg mt-2'>Tanggal Ubah: " . date('d-m-Y', strtotime($row['tanggal_ubah'])) . "</p>";
+                    echo "</div>";
+                }
+            } else {
+                echo "<div class='text-center'><p>Tidak ada catatan terdeteksi</p></div>";
+            }
+            ?>
+        </section>
+
+    </main>
+
+    <!-- Modal -->
+    <div id="searchModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-11/12 md:w-1/2">
+            <h2 class="text-xl font-bold mb-4">Hasil Pencarian</h2>
+            <div id="searchResults"></div>
+            <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onclick="closeModal()">Tutup</button>
         </div>
-      </nav>
-    </div><!-- End Page Title -->
-    <h2 align="center">Tabel data Notes</h2>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-
-    </section><!-- /Blog Pagination Section -->
-
-  </main>
-
-  <footer id="footer" class="footer accent-background">
-
-
-    <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Impact</strong> <span>All Rights Reserved</span></p>
-      <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you've purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-      </div>
     </div>
 
-  </footer>
+    <script>
+        let sortOrder = 0; // 0: Tanggal, 1: Judul, 2: Label, 3: Tanggal Ubah
 
-  <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+        function toggleSort() {
+            sortOrder = (sortOrder + 1) % 4; // Loop through 0, 1, 2, 3
 
-  <!-- Preloader -->
-  <div id="preloader"></div>
+            const sortIcon = document.getElementById('sortIcon');
+            switch (sortOrder) {
+                case 0:
+                    sortIcon.className = 'fas fa-calendar-alt fa-2xl group-hover:text-white'; // Tanggal
+                    sortNotes('tanggal');
+                    break;
+                case 1:
+                    sortIcon.className = 'fas fa-sort-alpha-up fa-2xl group-hover:text-white'; // Judul
+                    sortNotes('judul');
+                    break;
+                case 2:
+                    sortIcon.className = 'fas fa-tag fa-2xl group-hover:text-white'; // Label
+                    sortNotes('label');
+                    break;
+                case 3:
+                    sortIcon.className = 'fas fa-calendar-check fa-2xl group-hover:text-white'; // Tanggal Ubah
+                    sortNotes('tanggal_ubah');
+                    break;
+            }
+        }
 
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
-  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+        function sortNotes(criteria) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", `?sort=${criteria}`, true);
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    document.getElementById('notesSection').innerHTML = this.responseText;
+                }
+            };
+            xhr.send();
+        }
 
-  <!-- Main JS File -->
-  <script src="assets/js/main.js"></script>
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput').value.trim();
+            if (searchInput) {
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", `?search=${encodeURIComponent(searchInput)}`, true);
+                xhr.onload = function() {
+                    if (this.status === 200) {
+                        document.getElementById('searchResults').innerHTML = this.responseText;
+                        document.getElementById('searchModal').classList.remove('hidden');
+                    }
+                };
+                xhr.send();
+            }
+        }
 
+        function handleSearch(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('searchModal').classList.add('hidden');
+        }
+    </script>
 </body>
 
 </html>
